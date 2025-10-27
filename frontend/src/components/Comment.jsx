@@ -1,5 +1,7 @@
-import React from "react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
+import { format } from "timeago.js";
 
 const Container = styled.div`
   display: flex;
@@ -17,8 +19,8 @@ const Details = styled.div`
   display: flex;
   flex-direction: column;
   gap: 10px;
-  color: ${({ theme }) => theme.text}
-  `;
+  color: ${({ theme }) => theme.text};
+`;
 
 const Name = styled.span`
   font-size: 14px;
@@ -33,21 +35,32 @@ const Date = styled.span`
 `;
 
 const Text = styled.p`
-  font-size: 14px;`
+  font-size: 14px;
+`;
 
+function Comment({ comment }) {
+  const [channel, setChannel] = useState({});
 
-function Comment() {
+  useEffect(() => {
+    const fetchComment = async () => {
+      const res = await axios.get(`/api/users/find/${comment.userId}`);
+      setChannel(res.data);
+    };
+    fetchComment();
+  }, [comment.userId]);
+
   return (
     <Container>
       {" "}
-      <Author src="https://i.ibb.co/MBtjqXQ/no-avatar.gif" />
+      <Author
+        src={channel?.img || "https://i.ibb.co/MBtjqXQ/no-avatar.gif"}
+      />
       <Details>
         <Name>
-          John Doe <Date>1 day ago</Date>{" "}
+          {channel?.name} <Date>{format(comment.createdAt)}</Date>
         </Name>
 
-        <Text>Lorem ipsum dolor sit amet consectetur adipisicing elit. Consectetur debitis deleniti distinctio tenetur quidem sapiente nobis reiciendis dolor in pariatur deserunt maiores commodi iusto non, animi adipisci tempore tempora maxime?
-        </Text>
+        <Text>{comment.desc}</Text>
       </Details>
     </Container>
   );

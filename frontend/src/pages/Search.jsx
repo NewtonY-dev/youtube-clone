@@ -1,25 +1,26 @@
-import React, { useEffect, useState } from "react";
-import styled from "styled-components";
 import Card from "../components/Card";
 import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
+import styled from "styled-components";
 
 const Container = styled.div`
   display: flex;
-  justify-content: space-between;
   flex-wrap: wrap;
+  gap: 10px;
 `;
-
-function Home({ type }) {
+const Search = () => {
   const [videos, setVideos] = useState([]);
+  const query = useLocation().search;
 
   useEffect(() => {
     const fetchVideos = async () => {
-      const res = await axios.get(`/api/videos/${type}`);
-      // console.log(res);
+      const res = await axios.get(`/api/videos/search${query}`);
       setVideos(res.data);
     };
     fetchVideos();
-  }, [type]);
+  }, [query]);
+
   return (
     <Container>
       {videos.map((video) => (
@@ -27,6 +28,6 @@ function Home({ type }) {
       ))}
     </Container>
   );
-}
+};
 
-export default Home;
+export default Search;
